@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>일기 상세보기</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 10px;
+      }
+      .container {
+        max-width: 600px;
+        margin: 20px auto;
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 8px;
+      }
+      .comment-section {
+        margin-top: 30px;
+        border-top: 1px solid #eee;
+        padding-top: 10px;
+      }
+      .comment-item {
+        background: #f4f4f4;
+        padding: 8px;
+        border-radius: 4px;
+        margin-bottom: 5px;
+      }
+      .comment-form {
+        display: flex;
+        gap: 10px;
+        margin: 10px 0;
+      }
+      .comment-form input {
+        flex: 1;
+        padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <button onclick="location.href = 'emotionDiary.html'">
+        ← 목록으로 돌아가기
+      </button>
+
+      <!-- 일기 상세 내용 영역 -->
+      <div id="diaryDetail"></div>
+
+      <!-- 댓글 영역 -->
+      <div class="comment-section">
+        <h3>댓글</h3>
+        <div class="comment-form">
+          <input
+            type="text"
+            id="commentInput"
+            placeholder="댓글을 입력하세요..."
+          />
+          <button id="commentSaveBtn">등록</button>
+        </div>
+        <div id="commentList"></div>
+      </div>
+    </div>
+
+    <script>
+      // URL 매개변수에서 일기 ID 추출
+      const urlParams = new URLSearchParams(window.location.search);
+      // 파라미터에서 id로 들어온 값을 추출한다. 파라미터는 스트링이라 숫자 형변환
+      // 전부 파라미터로 들어온 아이디값으로 상세페이지 데이터 불러온다.
+      const diaryId = Number(urlParams.get("id"));
+
+      // localStorage 데이터 불러오기
+      let diaryList = JSON.parse(localStorage.getItem("diaryList")) || [];
+      let targetDiary = diaryList.find((item) => item.id === diaryId);
+
+      const diaryDetailDiv = document.getElementById("diaryDetail");
+      const commentListDiv = document.getElementById("commentList");
+      const commentInput = document.getElementById("commentInput");
+      const commentSaveBtn = document.getElementById("commentSaveBtn");
+
+      // 상세 데이터 출력
+      function renderDetail() {
+        if (!targetDiary) {
+          diaryDetailDiv.innerHTML = "<p>존재하지 않는 일기입니다.</p>";
+          // 뒤로돌아가기 + 알림창 넣으면 좋을 것 같다
+          return;
+        }
+
+        diaryDetailDiv.innerHTML = `
+          <h2>[${targetDiary.emotion}] ${targetDiary.title}</h2>
+          <small>${targetDiary.date}</small>
+          <br>
+          <hr />
+          <br>
+          <p>${targetDiary.content}</p>
+        `;
+
+        // 호이스팅
+        renderComments();
+      }
+
+      // 댓글삭제 (화살표함수라 호이스팅 안됨)
+      const deleteComment = (index) => {
+        targetDiary.comments.splice(index, 1);
+        localStorage.setItem("diaryList", JSON.stringify(diaryList));
+        renderComments();
+      };
+
+      // 댓글 목록 출력
+      function renderComments() {
+        const comments = targetDiary.comments || [];
+        if (comments.length === 0) {
+          commentListDiv.innerHTML = "<p>아직 댓글이 없습니다.</p>";
+          return;
+        }
+
+        // 반복문 (map) 쓸 때 인덱스를 넣는게 좋다...
+        commentListDiv.innerHTML = comments
+          .map(
+            (c, index) => `
+            <div class="comment-item">
+                ${c}
+                <button onclick="deleteComment(${index})">댓글삭제</button>
+            </div>
+          `,
+          )
+          .join("");
+      }
+
+      // 댓글 추가하기
+      function addComment() {
+        const text = commentInput.value.trim();
+        if (!text) {
+          alert("댓글 내용을 입력해주세요!");
+          return;
+        }
+
+        // 선택된 일기 댓글 배열에 추가
+        if (!targetDiary.comments) targetDiary.comments = [];
+        targetDiary.comments.push(text);
+        // 병합 할당 연산자로 사용 가능
+        // (targetDiary.comments ??= []).push(text);
+
+        // 전체 일기 목록 업데이트 및 저장
+        localStorage.setItem("diaryList", JSON.stringify(diaryList));
+
+        // 화면 새로고침
+        commentInput.value = "";
+        renderComments();
+      }
+
+      // 이벤트 리스너
+      commentSaveBtn.addEventListener("click", addComment);
+
+      // 초기 실행
+      renderDetail();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>다이어리 메인페이지</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        padding: 30px;
+        background-color: #f5f5f5;
+        color: #222222;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+
+      img,
+      video,
+      svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      p,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      span,
+      div,
+      small {
+        overflow-wrap: break-word;
+        word-break: break-word;
+      }
+
+      .mainPage {
+        margin: 0 auto;
+        max-width: 1100px;
+        width: 100%;
+      }
+
+      .header {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .headerTitleArea {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .openModalBtn {
+        padding: 10px 18px;
+        background-color: #222222;
+        color: #ffffff;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .imgDiv {
+        margin-top: 20px;
+        padding: 40px;
+        background-color: steelblue;
+        border-radius: 10px;
+        width: 100%;
+      }
+
+      .menu {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        display: flex;
+        gap: 20px;
+      }
+
+      .activeMenu {
+        border-bottom: 2px solid black;
+        font-weight: bold;
+        padding-bottom: 4px;
+        cursor: pointer;
+      }
+
+      .menuItem {
+        cursor: pointer;
+        color: #666;
+        padding-bottom: 4px;
+      }
+
+      .diaryContainer {
+        width: 100%;
+        margin-top: 20px;
+      }
+
+      .diaryList {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        width: 100%;
+      }
+
+      @media (max-width: 767px) {
+        .diaryList {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 600px) {
+        body {
+          padding: 16px;
+        }
+        .diaryList {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .diaryCard {
+        width: 100%;
+        padding: 20px;
+        border-radius: 24px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        cursor: pointer;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .diaryCard:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 1rem rgba(0, 0, 0, 0.1);
+      }
+
+      .cardHeader {
+        margin-bottom: 14px;
+        font-size: 64px;
+        background-color: darkcyan;
+        border-radius: 20px;
+        height: 208px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+      }
+
+      .cardEmoge {
+        padding: 10px;
+        border-radius: 100%;
+        background-color: #fcfcfc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        height: 80px;
+      }
+
+      .emotionDate {
+        margin-bottom: 10px;
+        justify-content: space-between;
+        display: flex;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .tag {
+        color: darkcyan;
+        font-weight: bold;
+      }
+
+      .cardTitle {
+        margin-top: 0;
+        margin-bottom: 12px;
+        font-size: 20px;
+      }
+
+      .cardText {
+        color: #555;
+        font-size: 14px;
+        line-height: 1.5;
+        display: -webkit-box;
+        /* 텍스트가 3줄 초과 시 말줄임표 */
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .toUp {
+        position: fixed;
+        right: 30px;
+        bottom: 30px;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        z-index: 99;
+        border-radius: 50%;
+        border: none;
+        background-color: #ffffff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+      }
+
+      .modalOverlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        z-index: 1000;
+      }
+
+      .modalContent {
+        background-color: #fff;
+        padding: 24px;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 640px;
+        max-height: 90vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .modalContent input,
+      .modalContent select,
+      .modalContent textarea {
+        margin-top: 4px;
+        margin-bottom: 20px;
+        padding: 10px;
+        width: 100%;
+        border: 1px solid #e4e4e4;
+        border-radius: 10px;
+        font-size: 14px;
+      }
+
+      .modalContent textarea {
+        height: 180px;
+        resize: vertical;
+      }
+
+      .modalButtons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .modalBtn {
+        height: 48px;
+        min-width: 100px;
+        padding: 0 20px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .cancelBtn {
+        background-color: #e4e4e4;
+        color: #333;
+      }
+
+      .saveBtn {
+        background-color: #222222;
+        color: #ffffff;
+      }
+
+      .diarySuccessModalOverlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        z-index: 1001;
+      }
+
+      .diarySuccessModal {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 480px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .diarySuccessModalBox {
+        text-align: center;
+      }
+
+      .diarySuccessBtn {
+        width: 100%;
+        height: 48px;
+        background-color: black;
+        color: #fff;
+        font-size: 18px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mainPage">
+      <div class="header">
+        <div class="headerTitleArea">
+          <h1>다이어리</h1>
+          <button class="openModalBtn" id="openModalBtn">+ 일기 쓰기</button>
+        </div>
+        <div class="imgDiv"></div>
+      </div>
+
+      <div class="menu">
+        <div class="activeMenu">일기보관함</div>
+        <div class="menuItem">사진보관함</div>
+      </div>
+
+      <h2 style="margin-bottom: 16px">일기 목록</h2>
+
+      <div class="diaryContainer">
+        <div class="diaryList" id="diaryList"></div>
+      </div>
+    </div>
+
+    <img src="../img/icons/up_outline_light_xl.svg" class="toUp" id="toUp" />
+
+    <div class="modalOverlay" id="modalOverlay">
+      <div class="modalContent">
+        <h3>일기 쓰기</h3>
+        <small>오늘 기분은 어땠나요?</small>
+        <select id="diaryEmotion">
+          <option value="행복해요">행복해요</option>
+          <option value="슬퍼요">슬퍼요</option>
+          <option value="놀랐어요">놀랐어요</option>
+          <option value="화났어요">화났어요</option>
+        </select>
+        <small>제목</small>
+        <input type="text" id="diaryTitle" placeholder="제목을 입력하세요" />
+        <small>내용</small>
+        <textarea
+          id="diaryContent"
+          placeholder="내용을 입력해 주세요."
+        ></textarea>
+        <div class="modalButtons">
+          <button class="modalBtn cancelBtn" id="cancelBtn">닫기</button>
+          <button class="modalBtn saveBtn" id="saveBtn">등록하기</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="diarySuccessModalOverlay" id="diarySuccessModalOverlay">
+      <div class="diarySuccessModal" id="diarySuccessModal">
+        <div class="diarySuccessModalBox" id="diarySuccessModalBox">
+          <h2>일기 등록 완료</h2>
+          <span style="display: inline-block; margin-top: 8px; color: #666"
+            >등록이 완료 되었습니다.</span
+          >
+        </div>
+        <button class="diarySuccessBtn" id="diarySuccessBtn">확인</button>
+      </div>
+    </div>
+
+    <script>
+      let diarys = JSON.parse(localStorage.getItem("diarys")) || [];
+
+      const diaryList = document.getElementById("diaryList");
+      const toUp = document.getElementById("toUp");
+      const modalOverlay = document.getElementById("modalOverlay");
+      const openModalBtn = document.getElementById("openModalBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
+      const saveBtn = document.getElementById("saveBtn");
+      const diarySuccessModalOverlay = document.getElementById(
+        "diarySuccessModalOverlay",
+      );
+      const diarySuccessBtn = document.getElementById("diarySuccessBtn");
+
+      const emotionMap = {
+        행복해요: "😊",
+        슬퍼요: "😭",
+        놀랐어요: "😲",
+        화났어요: "😡",
+      };
+
+      const renderDiaries = () => {
+        if (diarys.length === 0) {
+          diaryList.innerHTML =
+            "<p style='grid-column: 1/-1;'>작성된 일기가 없습니다.</p>";
+          return;
+        }
+
+        diaryList.innerHTML = diarys
+          .map(
+            (item) => `
+            <div class="diaryCard" onclick="goDetail(${item.id})">
+              <div class="cardHeader">
+                <span class="cardEmoge">${emotionMap[item.emotion] || "🐊"}</span>
+              </div>
+              <div class="emotionDate">
+                <span class="tag">${item.emotion}</span>
+                <span>${item.date}</span>
+              </div>
+              <h3 class="cardTitle">${item.title}</h3>
+              <p class="cardText">${item.content}</p>
+            </div>
+          `,
+          )
+          .join("");
+      };
+
+      const goDetail = (id) => {
+        location.href = `detail.html?id=${id}`;
+      };
+
+      const openModal = () => {
+        modalOverlay.style.display = "flex";
+      };
+
+      const closeModal = () => {
+        modalOverlay.style.display = "none";
+        document.getElementById("diaryTitle").value = "";
+        document.getElementById("diaryContent").value = "";
+      };
+
+      const toTop = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      const saveDiary = () => {
+        const title = document.getElementById("diaryTitle").value.trim();
+        const emotion = document.getElementById("diaryEmotion").value;
+        const content = document.getElementById("diaryContent").value.trim();
+
+        if (!title || !content) {
+          alert("제목 또는 내용을 입력해 주세요!");
+          return;
+        }
+
+        const newDiary = {
+          id: Date.now(),
+          title: title,
+          emotion: emotion,
+          content: content,
+          date: new Date().toLocaleDateString("ko-KR"),
+          comment: [],
+        };
+
+        diarys.unshift(newDiary);
+        localStorage.setItem("diarys", JSON.stringify(diarys));
+
+        closeModal();
+        renderDiaries();
+
+        diarySuccessModalOverlay.style.display = "flex";
+      };
+
+      toUp.addEventListener("click", toTop);
+      openModalBtn.addEventListener("click", openModal);
+      cancelBtn.addEventListener("click", closeModal);
+      saveBtn.addEventListener("click", saveDiary);
+      diarySuccessBtn.addEventListener("click", () => {
+        diarySuccessModalOverlay.style.display = "none";
+      });
+
+      renderDiaries();
+    </script>
+  </body>
+</html>

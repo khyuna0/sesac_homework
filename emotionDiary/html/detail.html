@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>일기 상세페이지</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        padding: 30px;
+        background-color: #f5f5f5;
+        color: #222222;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+
+      img,
+      video,
+      svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      p,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      span,
+      div,
+      small {
+        overflow-wrap: break-word;
+        word-break: break-word;
+      }
+
+      .mainPage {
+        margin: 0 auto;
+        max-width: 1100px;
+        width: 100%;
+      }
+
+      .header {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .backBtn {
+        padding: 8px 16px;
+        background-color: #222222;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .contentContainer {
+        width: 100%;
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 16px;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      }
+
+      .contentBox {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .titleAndDate {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .titleAndDate h3 {
+        font-size: 24px;
+      }
+
+      .titleAndDate small {
+        color: #888888;
+      }
+
+      .detailContent {
+        line-height: 1.6;
+        min-height: 120px;
+        white-space: pre-wrap;
+        font-size: 16px;
+        color: #333333;
+      }
+
+      .buttonGroup {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+
+      .deleteBtn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        background-color: #ff4d4f;
+        color: white;
+        font-weight: bold;
+      }
+
+      .commentBox {
+        border-top: 1px solid #eee;
+        padding-top: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .commentInputBox {
+        display: flex;
+        gap: 10px;
+        width: 100%;
+      }
+
+      .commentInput {
+        flex: 1;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+
+      .commentSubmitBtn {
+        padding: 12px 20px;
+        background-color: #222222;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .commentContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .commentItem {
+        background-color: #f9f9f9;
+        padding: 14px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .commentDeleteBtn {
+        background-color: transparent;
+        color: #ff4d4f;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: bold;
+      }
+
+      .toUp {
+        position: fixed;
+        right: 30px;
+        bottom: 30px;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        border-radius: 50%;
+        border: none;
+        background-color: #ffffff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+      }
+
+      @media (max-width: 600px) {
+        body {
+          padding: 16px;
+        }
+        .contentContainer {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="mainPage">
+      <div class="header">
+        <h1>다이어리</h1>
+        <button class="backBtn" onclick="location.href = 'index.html'">
+          ← 목록으로
+        </button>
+      </div>
+
+      <div class="contentContainer">
+        <div class="contentBox" id="contentBox">
+          <div class="titleAndDate">
+            <h3 id="detailTitle">일기제목</h3>
+            <small id="detailDate">작성일</small>
+          </div>
+          <div class="detailContent" id="detailContent">내용이 들어갑니다</div>
+          <div class="buttonGroup">
+            <button class="deleteBtn" id="deleteDiaryBtn">삭제</button>
+          </div>
+        </div>
+
+        <div class="commentBox">
+          <h4>회고</h4>
+          <div class="commentInputBox">
+            <input
+              type="text"
+              class="commentInput"
+              id="commentInput"
+              placeholder="회고를 남겨보세요"
+            />
+            <button class="commentSubmitBtn" id="commentSubmitBtn">입력</button>
+          </div>
+          <div class="commentContainer" id="commentContainer">
+            <div>등록된 회고가 없습니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="toUp" id="toUp">▲</button>
+
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const diaryId = Number(urlParams.get("id"));
+
+      let diarys = JSON.parse(localStorage.getItem("diarys")) || [];
+      let targetDiary = diarys.find((item) => item.id === diaryId);
+
+      const detailTitle = document.getElementById("detailTitle");
+      const detailDate = document.getElementById("detailDate");
+      const detailContent = document.getElementById("detailContent");
+      const deleteDiaryBtn = document.getElementById("deleteDiaryBtn");
+
+      const commentInput = document.getElementById("commentInput");
+      const commentSubmitBtn = document.getElementById("commentSubmitBtn");
+      const commentContainer = document.getElementById("commentContainer");
+      const toUp = document.getElementById("toUp");
+
+      const renderDetail = () => {
+        if (!targetDiary) {
+          document.getElementById("contentBox").innerHTML =
+            "<p>존재하지 않거나 삭제된 일기입니다.</p>";
+          return;
+        }
+
+        detailTitle.innerText = `[${targetDiary.emotion}] ${targetDiary.title}`;
+        detailDate.innerText = targetDiary.date;
+        detailContent.innerText = targetDiary.content;
+
+        renderComments();
+      };
+
+      const renderComments = () => {
+        const comments = targetDiary.comment || [];
+        if (comments.length === 0) {
+          commentContainer.innerHTML =
+            "<div style='color:#888;'>등록된 회고가 없습니다.</div>";
+          return;
+        }
+
+        commentContainer.innerHTML = comments
+          .map(
+            (c, index) => `
+            <div class="commentItem">
+              <span>${c}</span>
+              <button class="commentDeleteBtn" onclick="deleteComment(${index})">삭제</button>
+            </div>
+          `,
+          )
+          .join("");
+      };
+
+      const addComment = () => {
+        const text = commentInput.value.trim();
+        if (!text) {
+          alert("회고 내용을 입력해주세요!");
+          return;
+        }
+
+        if (!targetDiary.comment) targetDiary.comment = [];
+        targetDiary.comment.push(text);
+
+        localStorage.setItem("diarys", JSON.stringify(diarys));
+        commentInput.value = "";
+        renderComments();
+      };
+
+      const deleteComment = (index) => {
+        targetDiary.comment.splice(index, 1);
+        localStorage.setItem("diarys", JSON.stringify(diarys));
+        renderComments();
+      };
+
+      deleteDiaryBtn.addEventListener("click", () => {
+        if (confirm("정말 이 일기를 삭제하시겠습니까?")) {
+          diarys = diarys.filter((item) => item.id !== diaryId);
+          localStorage.setItem("diarys", JSON.stringify(diarys));
+          location.href = "index.html";
+        }
+      });
+
+      commentSubmitBtn.addEventListener("click", addComment);
+      toUp.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      renderDetail();
+    </script>
+  </body>
+</html>
