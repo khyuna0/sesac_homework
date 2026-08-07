@@ -207,6 +207,55 @@
           padding: 16px;
         }
       }
+
+      .copyBtn {
+        display: flex;
+        justify-content: flex-end;
+        margin-left: auto;
+        gap: 10px;
+        /* border: 1px solid black; */
+        width: 120px;
+        height: 30px;
+        position: relative;
+      }
+
+      .copyBtn:hover {
+        cursor: pointer;
+      }
+
+      /* 내용이 복사되었습니다. 애니메이션 */
+      .copyToast {
+        display: none;
+        position: relative;
+        top: 10vh;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
+        background-color: #222222;
+        border-radius: 10px;
+        color: #e4e4e4;
+        height: 56px;
+        width: 760px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+        /* 토스트 키프레임 애니메이션 */
+        animation: toastAnimation 3s forwards;
+      }
+
+      @keyframes toastAnimation {
+        0% {
+          opacity: 0;
+          transform: translateY(50%);
+        }
+
+        80% {
+          opacity: 100;
+        }
+
+        100% {
+          opacity: 0;
+        }
+      }
     </style>
   </head>
   <body>
@@ -225,6 +274,12 @@
             <small id="detailDate">작성일</small>
           </div>
           <div class="detailContent" id="detailContent">내용이 들어갑니다</div>
+
+          <div class="copyBtn" id="copyBtn">
+            <img src="../img/icons/copy_outline_light_m.svg" />
+            <span>내용 복사</span>
+          </div>
+
           <div class="buttonGroup">
             <button class="deleteBtn" id="deleteDiaryBtn">삭제</button>
           </div>
@@ -248,7 +303,14 @@
       </div>
     </div>
 
-    <button class="toUp" id="toUp">▲</button>
+    <!-- 상단이동버튼 -->
+    <img src="../img/icons/up_outline_light_xl.svg" class="toUp" id="toUp" />
+
+    <!-- 복사완료토스트 -->
+
+    <div class="copyToast" id="copyToast">
+      <span>내용이 복사되었습니다.</span>
+    </div>
 
     <script>
       const urlParams = new URLSearchParams(window.location.search);
@@ -257,6 +319,7 @@
       let diarys = JSON.parse(localStorage.getItem("diarys")) || [];
       let targetDiary = diarys.find((item) => item.id === diaryId);
 
+      // 선택메서드
       const detailTitle = document.getElementById("detailTitle");
       const detailDate = document.getElementById("detailDate");
       const detailContent = document.getElementById("detailContent");
@@ -266,7 +329,10 @@
       const commentSubmitBtn = document.getElementById("commentSubmitBtn");
       const commentContainer = document.getElementById("commentContainer");
       const toUp = document.getElementById("toUp");
+      const handleCopy = document.getElementById("copyBtn");
+      const copyToast = document.getElementById("copyToast");
 
+      // 일기불러오기
       const renderDetail = () => {
         if (!targetDiary) {
           document.getElementById("contentBox").innerHTML =
@@ -281,6 +347,7 @@
         renderComments();
       };
 
+      // 댓글 불러오기
       const renderComments = () => {
         const comments = targetDiary.comment || [];
         if (comments.length === 0) {
@@ -301,6 +368,7 @@
           .join("");
       };
 
+      //댓글 추가
       const addComment = () => {
         const text = commentInput.value.trim();
         if (!text) {
@@ -316,6 +384,7 @@
         renderComments();
       };
 
+      // 댓글 삭제
       const deleteComment = (index) => {
         targetDiary.comment.splice(index, 1);
         localStorage.setItem("diarys", JSON.stringify(diarys));
@@ -335,6 +404,13 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
 
+      // 내용 복사
+      handleCopy.addEventListener("click", () => {
+        navigator.clipboard.writeText(targetDiary.content);
+        copyToast.style.display = "flex";
+      });
+
+      // 초기 실행
       renderDetail();
     </script>
   </body>

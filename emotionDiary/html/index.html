@@ -15,6 +15,9 @@
         padding: 30px;
         background-color: #f5f5f5;
         color: #222222;
+        height: 5000px;
+        /* 모달 스크롤 방지 */
+        overflow: unset;
       }
 
       img,
@@ -52,9 +55,14 @@
       }
 
       .headerTitleArea {
+        height: 100px;
+        background-color: #f5f5f5;
+        position: sticky;
+        top: 0vh;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        z-index: 100;
       }
 
       .openModalBtn {
@@ -70,9 +78,10 @@
       .imgDiv {
         margin-top: 20px;
         padding: 40px;
-        background-color: steelblue;
-        border-radius: 10px;
+        background-color: #e4e4e4;
+        border-radius: 20px;
         width: 100%;
+        height: 200px;
       }
 
       .menu {
@@ -102,7 +111,7 @@
 
       .diaryList {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 20px;
         width: 100%;
       }
@@ -317,12 +326,14 @@
   </head>
   <body>
     <div class="mainPage">
+      <div class="headerTitleArea">
+        <h1>다이어리</h1>
+        <button class="openModalBtn" id="openModalBtn">+ 일기 쓰기</button>
+      </div>
       <div class="header">
-        <div class="headerTitleArea">
-          <h1>다이어리</h1>
-          <button class="openModalBtn" id="openModalBtn">+ 일기 쓰기</button>
+        <div class="imgDiv">
+          <h2>오늘의 기분을 남기는 작은 일기장</h2>
         </div>
-        <div class="imgDiv"></div>
       </div>
 
       <div class="menu">
@@ -331,6 +342,9 @@
       </div>
 
       <h2 style="margin-bottom: 16px">일기 목록</h2>
+
+      <!-- 검색창 -->
+      <input type="" name="" id="" />
 
       <div class="diaryContainer">
         <div class="diaryList" id="diaryList"></div>
@@ -426,12 +440,36 @@
         location.href = `detail.html?id=${id}`;
       };
 
-      const openModal = () => {
-        modalOverlay.style.display = "flex";
+      // ESC 감지
+      const handleKeyDown = (e) => {
+        if (e.key === "Escape") {
+          closeModal();
+        }
       };
+
+      const openModal = () => {
+        toTop();
+        modalOverlay.style.display = "flex";
+        // overflow = 스크롤 속성
+        document.body.style.overflow = "hidden";
+
+        // css 속성을 기준으로 판단하는 방법
+        if (window.getComputedStyle(modalOverlay).display === "flex") {
+          window.addEventListener("keydown", handleKeyDown);
+        }
+      };
+
+      // 모달오버레이 클릭 시 닫기
+      modalOverlay.addEventListener("click", (e) => {
+        // currentTarget : 이벤트 리스너가 붙어있는 요소, this와 동일
+        if (e.target === e.currentTarget) {
+          closeModal();
+        }
+      });
 
       const closeModal = () => {
         modalOverlay.style.display = "none";
+        document.body.style.overflow = "unset";
         document.getElementById("diaryTitle").value = "";
         document.getElementById("diaryContent").value = "";
       };
