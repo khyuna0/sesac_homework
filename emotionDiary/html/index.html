@@ -147,7 +147,7 @@
       .cardHeader {
         margin-bottom: 14px;
         font-size: 64px;
-        background-color: darkcyan;
+        background-color: rgb(182, 221, 255);
         border-radius: 20px;
         height: 208px;
         display: flex;
@@ -163,8 +163,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
       }
 
       .emotionDate {
@@ -328,7 +328,7 @@
         gap: 10px;
       }
 
-      .search {
+      .searchText {
         width: 100%;
         height: 45px;
         border-radius: 10px;
@@ -354,6 +354,7 @@
       <div class="header">
         <div class="imgDiv">
           <h2>오늘의 기분을 남기는 작은 일기장</h2>
+          <img src="" class="una" />
         </div>
       </div>
 
@@ -369,12 +370,13 @@
       <div class="searchDiv">
         <input
           type="text"
-          id="search"
-          class="search"
+          id="searchText"
+          class="searchText"
           placeholder="   🔎  제목으로 검색해 보세요!"
         />
 
         <select class="searchEmo">
+          <option value="" selected>전체</option>
           <option value="">행복해요</option>
           <option value="">슬퍼요</option>
           <option value="">놀랐어요</option>
@@ -440,6 +442,7 @@
         "diarySuccessModalOverlay",
       );
       const diarySuccessBtn = document.getElementById("diarySuccessBtn");
+      const searchText = document.getElementById("searchText");
 
       const emotionMap = {
         행복해요: "😊",
@@ -449,14 +452,21 @@
         기타: "😐",
       };
 
-      const renderDiaries = () => {
+      // 다이어리 렌더링
+      const renderDiaries = (filtered) => {
         if (diarys.length === 0) {
           diaryList.innerHTML =
             "<p style='grid-column: 1/-1;'>작성된 일기가 없습니다.</p>";
           return;
         }
 
-        diaryList.innerHTML = diarys
+        let targetArray = diarys ?? [];
+
+        if (filtered && filtered.length !== 0) {
+          targetArray = filtered;
+        }
+
+        diaryList.innerHTML = targetArray
           .map(
             (item) => `
             <div class="diaryCard" onclick="goDetail(${item.id})">
@@ -475,17 +485,27 @@
           .join("");
       };
 
+      // 상세페이지로 가는 함수
       const goDetail = (id) => {
         location.href = `detail.html?id=${id}`;
       };
 
       // ESC 감지
-      const handleKeyDown = (e) => {
+      const handleKeyDownEsc = (e) => {
         if (e.key === "Escape") {
           closeModal();
         }
       };
 
+      //엔터감지
+      const handleKeyDownEnter = (e) => {
+        if (e.key === "Enter") {
+          saveDiary();
+          closeModal();
+        }
+      };
+
+      // 모달 열기
       const openModal = () => {
         toTop();
         modalOverlay.style.display = "flex";
@@ -494,7 +514,7 @@
 
         // css 속성을 기준으로 판단하는 방법
         if (window.getComputedStyle(modalOverlay).display === "flex") {
-          window.addEventListener("keydown", handleKeyDown);
+          window.addEventListener("keydown", handleKeyDownEsc);
         }
       };
 
@@ -505,7 +525,11 @@
           closeModal();
         }
       });
+      
+      // 모달오버레이에서 엔터 누르면 쓰는 기능
+      modalOverlay.addEventListener("keydown", handleKeyDownEnter);
 
+      // 모달 닫기
       const closeModal = () => {
         modalOverlay.style.display = "none";
         document.body.style.overflow = "unset";
@@ -513,10 +537,12 @@
         document.getElementById("diaryContent").value = "";
       };
 
+      // 상단이동
       const toTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
       };
 
+      // 일기 저장
       const saveDiary = () => {
         const title = document.getElementById("diaryTitle").value.trim();
         const emotion = document.getElementById("diaryEmotion").value;
@@ -536,12 +562,14 @@
           comment: [],
         };
 
+        // 배열 인덱스의 0번으로 넣어주기 - 최신순 정렬
         diarys.unshift(newDiary);
         localStorage.setItem("diarys", JSON.stringify(diarys));
 
         closeModal();
         renderDiaries();
 
+        // 일기작성모달 열기
         diarySuccessModalOverlay.style.display = "flex";
       };
 
@@ -551,6 +579,18 @@
       saveBtn.addEventListener("click", saveDiary);
       diarySuccessBtn.addEventListener("click", () => {
         diarySuccessModalOverlay.style.display = "none";
+      });
+      searchText.addEventListener("input", (e) => {
+        if (e.target.value.trim() === "") {
+          renderDiaries();
+          return;
+        }
+
+        const filteredDiaries = diarys.filter((diarys) =>
+          diarys.content.includes(e.target.value),
+        );
+
+        renderDiaries(filteredDiaries);
       });
 
       renderDiaries();
