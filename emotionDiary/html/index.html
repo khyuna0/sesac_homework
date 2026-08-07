@@ -525,7 +525,7 @@
           closeModal();
         }
       });
-      
+
       // 모달오버레이에서 엔터 누르면 쓰는 기능
       modalOverlay.addEventListener("keydown", handleKeyDownEnter);
 
@@ -580,6 +580,7 @@
       diarySuccessBtn.addEventListener("click", () => {
         diarySuccessModalOverlay.style.display = "none";
       });
+
       searchText.addEventListener("input", (e) => {
         if (e.target.value.trim() === "") {
           renderDiaries();
