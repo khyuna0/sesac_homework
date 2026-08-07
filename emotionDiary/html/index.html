@@ -15,7 +15,7 @@
         padding: 30px;
         background-color: #f5f5f5;
         color: #222222;
-        height: 5000px;
+        /* height: 5000px; */
         /* 모달 스크롤 방지 */
         overflow: unset;
       }
@@ -55,7 +55,7 @@
       }
 
       .headerTitleArea {
-        height: 100px;
+        height: 80px;
         background-color: #f5f5f5;
         position: sticky;
         top: 0vh;
@@ -81,7 +81,7 @@
         background-color: #e4e4e4;
         border-radius: 20px;
         width: 100%;
-        height: 200px;
+        height: 300px;
       }
 
       .menu {
@@ -322,6 +322,27 @@
         border-radius: 10px;
         cursor: pointer;
       }
+
+      .searchDiv {
+        display: flex;
+        gap: 10px;
+      }
+
+      .search {
+        width: 100%;
+        height: 45px;
+        border-radius: 10px;
+        border: 1px solid #e4e4e4;
+      }
+
+      .searchEmo {
+        padding: 10px;
+        width: 110px;
+        height: 45px;
+        border: 1px solid #e4e4e4;
+        border-radius: 10px;
+        font-size: 14px;
+      }
     </style>
   </head>
   <body>
@@ -342,9 +363,25 @@
       </div>
 
       <h2 style="margin-bottom: 16px">일기 목록</h2>
+      <small></small>
 
       <!-- 검색창 -->
-      <input type="" name="" id="" />
+      <div class="searchDiv">
+        <input
+          type="text"
+          id="search"
+          class="search"
+          placeholder="   🔎  제목으로 검색해 보세요!"
+        />
+
+        <select class="searchEmo">
+          <option value="">행복해요</option>
+          <option value="">슬퍼요</option>
+          <option value="">놀랐어요</option>
+          <option value="">화났어요</option>
+          <option value="">기타</option>
+        </select>
+      </div>
 
       <div class="diaryContainer">
         <div class="diaryList" id="diaryList"></div>
@@ -362,6 +399,7 @@
           <option value="슬퍼요">슬퍼요</option>
           <option value="놀랐어요">놀랐어요</option>
           <option value="화났어요">화났어요</option>
+          <option value="기타">기타</option>
         </select>
         <small>제목</small>
         <input type="text" id="diaryTitle" placeholder="제목을 입력하세요" />
@@ -408,6 +446,7 @@
         슬퍼요: "😭",
         놀랐어요: "😲",
         화났어요: "😡",
+        기타: "😐",
       };
 
       const renderDiaries = () => {
