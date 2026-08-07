@@ -15,10 +15,6 @@
         padding: 30px;
         background-color: #f5f5f5;
         color: #222222;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
       }
 
       img,
@@ -38,6 +34,7 @@
       span,
       div,
       small {
+        /* 텍스트 넘침 방지 */
         overflow-wrap: break-word;
         word-break: break-word;
       }
@@ -85,14 +82,14 @@
         gap: 20px;
       }
 
-      .activeMenu {
+      .diaryBox {
         border-bottom: 2px solid black;
         font-weight: bold;
         padding-bottom: 4px;
         cursor: pointer;
       }
 
-      .menuItem {
+      .imgBox {
         cursor: pointer;
         color: #666;
         padding-bottom: 4px;
@@ -116,15 +113,6 @@
         }
       }
 
-      @media (max-width: 600px) {
-        body {
-          padding: 16px;
-        }
-        .diaryList {
-          grid-template-columns: 1fr;
-        }
-      }
-
       .diaryCard {
         width: 100%;
         padding: 20px;
@@ -139,10 +127,13 @@
         flex-direction: column;
       }
 
+      /* hover 속성은 해당 영역에 커서를 두면 실행된다. */
       .diaryCard:hover {
         transform: translateY(-4px);
         box-shadow: 0 6px 1rem rgba(0, 0, 0, 0.1);
       }
+
+      /* 카드 영역 */
 
       .cardHeader {
         margin-bottom: 14px;
@@ -204,15 +195,9 @@
         width: 50px;
         height: 50px;
         cursor: pointer;
-        z-index: 99;
-        border-radius: 50%;
-        border: none;
-        background-color: #ffffff;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
         display: flex;
         justify-content: center;
         align-items: center;
-        font-weight: bold;
       }
 
       .modalOverlay {
@@ -341,8 +326,8 @@
       </div>
 
       <div class="menu">
-        <div class="activeMenu">일기보관함</div>
-        <div class="menuItem">사진보관함</div>
+        <div class="diaryBox">일기보관함</div>
+        <div class="imgBox">사진보관함</div>
       </div>
 
       <h2 style="margin-bottom: 16px">일기 목록</h2>
@@ -423,7 +408,7 @@
             (item) => `
             <div class="diaryCard" onclick="goDetail(${item.id})">
               <div class="cardHeader">
-                <span class="cardEmoge">${emotionMap[item.emotion] || "🐊"}</span>
+                <span class="cardEmoge">${emotionMap[item.emotion] || "🦖"}</span>
               </div>
               <div class="emotionDate">
                 <span class="tag">${item.emotion}</span>
